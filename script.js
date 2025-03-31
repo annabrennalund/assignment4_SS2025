@@ -56,3 +56,46 @@ function displayMeal(name, image, category, ingredients, instructions) {
 // Call the fetchRandomMeal function when the page is loaded
 document.addEventListener('DOMContentLoaded', fetchRandomMeal);
 
+
+
+
+//cocktail
+
+
+
+const mealCategoryToCocktailIngredient = {
+  "Chicken": "Rum",
+  "Beef": "Whiskey",
+  "Seafood": "Vodka",
+  "Vegetarian": "Gin",
+  "Pork": "Tequila",
+  "Dessert": "Cream",
+  "Breakfast": "Coffee"
+};
+
+function mapMealCategoryToDrinkIngredient(category) {
+  return mealCategoryToCocktailIngredient[category] ||
+
+
+
+async function getCocktailByMealCategory(mealCategory) {
+  const drinkIngredient = mapMealCategoryToDrinkIngredient(mealCategory);
+
+  // Søk etter en cocktail basert på ingrediensen
+  const searchUrl = `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${drinkIngredient}`;
+  let response = await fetch(searchUrl);
+  let data = await response.json();
+
+  if (data.drinks && data.drinks.length > 0) {
+      // Hvis vi finner minst én cocktail, velg den første
+      displayCocktail(data.drinks[0]);
+  } else {
+      // Hvis ingen cocktail finnes, hent en tilfeldig en
+      getRandomCocktail();
+  }
+}
+
+}
+
+
+
