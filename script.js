@@ -98,4 +98,34 @@ async function getCocktailByMealCategory(mealCategory) {
 }
 
 
+async function getRandomCocktail() {
+  const randomUrl = "https://www.thecocktaildb.com/api/json/v1/1/random.php";
+  const response = await fetch(randomUrl);
+  const data = await response.json();
+  
+  if (data.drinks) {
+      displayCocktail(data.drinks[0]);
+  }
+}
+
+
+function displayCocktail(cocktail) {
+  document.getElementById("cocktail-name").textContent = cocktail.strDrink;
+  document.getElementById("cocktail-image").src = cocktail.strDrinkThumb;
+  
+  let ingredientsList = "";
+  for (let i = 1; i <= 15; i++) {
+      const ingredient = cocktail[`strIngredient${i}`];
+      const measure = cocktail[`strMeasure${i}`];
+      if (ingredient) {
+          ingredientsList += `<li>${measure || ""} ${ingredient}</li>`;
+      }
+  }
+  
+  document.getElementById("cocktail-ingredients").innerHTML = ingredientsList;
+}
+
+
+getCocktailByMealCategory(meal.strCategory);
+
 
