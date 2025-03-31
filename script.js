@@ -1,103 +1,58 @@
-/*
-Mapping from MealDB Categories to TheCocktailDB drink ingredient
-You can customize or expand this object to suit your needs.
-*/
-const mealCategoryToCocktailIngredient = {
-  Beef: "whiskey",
-  Chicken: "gin",
-  Dessert: "amaretto",
-  Lamb: "vodka",
-  Miscellaneous: "vodka",
-  Pasta: "tequila",
-  Pork: "tequila",
-  Seafood: "rum",
-  Side: "brandy",
-  Starter: "rum",
-  Vegetarian: "gin",
-  Breakfast: "vodka",
-  Goat: "whiskey",
-  Vegan: "rum",
-  // Add more if needed; otherwise default to something like 'cola'
-};
+// Function to fetch a random meal from the API
+async function fetchRandomMeal() {
+  // Send request to the API to fetch a random meal
+  const response = await fetch('https://www.themealdb.com/api/json/v1/1/random.php');
+  
+  // Parse the JSON response
+  const data = await response.json();
+  
+  // Explore the structure of the JSON response (log it to the console)
+  console.log(data);
 
-/*
-    2) Main Initialization Function
-       Called on page load to start all the requests:
-       - Fetch random meal
-       - Display meal
-       - Map meal category to spirit
-       - Fetch matching (or random) cocktail
-       - Display cocktail
-*/
-function init() {
-  fetchRandomMeal()
-    .then((meal) => {
-      displayMealData(meal);
-      const spirit = mapMealCategoryToDrinkIngredient(meal.strCategory);
-      return fetchCocktailByDrinkIngredient(spirit);
-    })
-    .then((cocktail) => {
-      displayCocktailData(cocktail);
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
+  // Extract the first meal from the response
+  const meal = data.meals[0]; // The response contains a "meals" array, and we need the first item
+
+  // Extract relevant information
+  const mealName = meal.strMeal;
+  const mealImage = meal.strMealThumb;
+  const mealCategory = meal.strCategory;
+  const mealInstructions = meal.strInstructions;
+
+  // Extract the ingredients and measures
+  const ingredients = [];
+  for (let i = 1; i <= 20; i++) {
+      const ingredient = meal[`strIngredient${i}`];
+      const measure = meal[`strMeasure${i}`];
+      if (ingredient && measure) {
+          ingredients.push({ ingredient, measure });
+      }
+  }
+
+  // Display the meal details on the webpage
+  displayMeal(mealName, mealImage, mealCategory, ingredients, mealInstructions);
 }
 
-/*
- Fetch a Random Meal from TheMealDB
- Returns a Promise that resolves with the meal object
- */
-function fetchRandomMeal() {
-    // Fill in
+// Function to display the meal details on the webpage
+function displayMeal(name, image, category, ingredients, instructions) {
+  // Get the element to display the meal information
+  const mealContainer = document.getElementById('meal-container');
+
+  // Display the meal details
+  mealContainer.innerHTML = `
+      <h2>${name}</h2>
+      <img src="${image}" alt="${name}" />
+      <p><strong>Category:</strong> ${category}</p>
+      
+      <h3>Ingredients:</h3>
+      <ul>
+          ${ingredients.map(ing => `<li>${ing.ingredient}: ${ing.measure}</li>`).join('')}
+      </ul>
+      
+      <h3>Instructions:</h3>
+      <p>${instructions}</p>
+  `;
 }
 
-/*
-Display Meal Data in the DOM
-Receives a meal object with fields like:
-  strMeal, strMealThumb, strCategory, strInstructions,
-  strIngredientX, strMeasureX, etc.
-*/
-function displayMealData(meal) {
-    // Fill in
-}
+// Call the fetchRandomMeal function when the page is loaded
+document.addEventListener('DOMContentLoaded', fetchRandomMeal);
 
-/*
-Convert MealDB Category to a TheCocktailDB Spirit
-Looks up category in our map, or defaults to 'cola'
-*/
-function mapMealCategoryToDrinkIngredient(category) {
-  if (!category) return "cola";
-  return mealCategoryToCocktailIngredient[category] || "cola";
-}
-
-/*
-Fetch a Cocktail Using a Spirit from TheCocktailDB
-Returns Promise that resolves to cocktail object
-We call https://www.thecocktaildb.com/api/json/v1/1/search.php?s=DRINK_INGREDIENT to get a list of cocktails
-Don't forget encodeURIComponent()
-If no cocktails found, fetch random
-*/
-function fetchCocktailByDrinkIngredient(drinkIngredient) {
-    // Fill in
-}
-
-/*
-Fetch a Random Cocktail (backup in case nothing is found by the search)
-Returns a Promise that resolves to cocktail object
-*/
-function fetchRandomCocktail() {
-    // Fill in
-}
-
-/*
-Display Cocktail Data in the DOM
-*/
-function displayCocktailData(cocktail) {
-    // Fill in
-}
-
-/*
-Call init() when the page loads
-*/
-window.onload = init;

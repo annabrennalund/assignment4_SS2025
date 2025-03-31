@@ -22,3 +22,103 @@ body {
   display: block;
   margin-top: 10px;
 }
+/* Basic Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+}
+
+/* Eat Container */
+#eat-container {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 80%;
+  max-width: 600px;
+  text-align: center;
+}
+
+/* Meal Title */
+#eat-container h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* Meal Image */
+#eat-container img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+
+/* Category */
+#eat-container p {
+  font-size: 1.2rem;
+  color: #777;
+}
+
+/* Ingredients Section */
+#eat-container h3 {
+  margin-top: 20px;
+  font-size: 1.5rem;
+  color: #555;
+}
+
+/* Ingredient List */
+#eat-container ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 10px 0;
+}
+
+#eat-container li {
+  font-size: 1.1rem;
+  margin: 5px 0;
+  color: #555;
+}
+
+/* Instructions Section */
+#eat-container p:last-of-type {
+  font-size: 1.1rem;
+  color: #333;
+  margin-top: 20px;
+}
+
+/* Aesthetic touches */
+h2, h3 {
+  font-family: 'Georgia', serif;
+}
+
+ul {
+  text-align: left;
+  margin: 0;
+}
+
+li {
+  padding-left: 20px;
+  position: relative;
+}
+
+li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #5c6bc0;
+  font-size: 1.2rem;
+}
