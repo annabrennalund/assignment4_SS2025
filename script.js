@@ -1,131 +1,205 @@
-// Function to fetch a random meal from the API
-async function fetchRandomMeal() {
-  // Send request to the API to fetch a random meal
-  const response = await fetch('https://www.themealdb.com/api/json/v1/1/random.php');
-  
-  // Parse the JSON response
-  const data = await response.json();
-  
-  // Explore the structure of the JSON response (log it to the console)
-  console.log(data);
-
-  // Extract the first meal from the response
-  const meal = data.meals[0]; // The response contains a "meals" array, and we need the first item
-
-  // Extract relevant information
-  const mealName = meal.strMeal;
-  const mealImage = meal.strMealThumb;
-  const mealCategory = meal.strCategory;
-  const mealInstructions = meal.strInstructions;
-
-  // Extract the ingredients and measures
-  const ingredients = [];
-  for (let i = 1; i <= 20; i++) {
-      const ingredient = meal[`strIngredient${i}`];
-      const measure = meal[`strMeasure${i}`];
-      if (ingredient && measure) {
-          ingredients.push({ ingredient, measure });
-      }
-  }
-
-  // Display the meal details on the webpage
-  displayMeal(mealName, mealImage, mealCategory, ingredients, mealInstructions);
-}
-
-// Function to display the meal details on the webpage
-function displayMeal(name, image, category, ingredients, instructions) {
-  // Get the element to display the meal information
-  const mealContainer = document.getElementById('meal-container');
-
-  // Display the meal details
-  mealContainer.innerHTML = `
-      <h2>${name}</h2>
-      <img src="${image}" alt="${name}" />
-      <p><strong>Category:</strong> ${category}</p>
-      
-      <h3>Ingredients:</h3>
-      <ul>
-          ${ingredients.map(ing => `<li>${ing.ingredient}: ${ing.measure}</li>`).join('')}
-      </ul>
-      
-      <h3>Instructions:</h3>
-      <p>${instructions}</p>
-  `;
-}
-
-// Call the fetchRandomMeal function when the page is loaded
-document.addEventListener('DOMContentLoaded', fetchRandomMeal);
 
 
-
-
-//cocktail
-
-
+/*
+Mapping from MealDB Categories to TheCocktailDB drink ingredient
+*/
 
 const mealCategoryToCocktailIngredient = {
-  "Chicken": "Rum",
-  "Beef": "Whiskey",
-  "Seafood": "Vodka",
-  "Vegetarian": "Gin",
-  "Pork": "Tequila",
-  "Dessert": "Cream",
-  "Breakfast": "Coffee"
+  Beef: "whiskey",
+  Chicken: "gin",
+  Dessert: "amaretto",
+  Lamb: "vodka",
+  Miscellaneous: "vodka",
+  Pasta: "tequila",
+  Pork: "tequila",
+  Seafood: "rum",
+  Side: "brandy",
+  Starter: "rum",
+  Vegetarian: "gin",
+  Breakfast: "vodka",
+  Goat: "whiskey",
+  Vegan: "rum",
+  // Add more if needed; otherwise default to something like 'cola'
 };
 
-function mapMealCategoryToDrinkIngredient(category) {
-  return mealCategoryToCocktailIngredient[category] ||
-
-
-
-async function getCocktailByMealCategory(mealCategory) {
-  const drinkIngredient = mapMealCategoryToDrinkIngredient(mealCategory);
-
-  // Søk etter en cocktail basert på ingrediensen
-  const searchUrl = `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${drinkIngredient}`;
-  let response = await fetch(searchUrl);
-  let data = await response.json();
-
-  if (data.drinks && data.drinks.length > 0) {
-      // Hvis vi finner minst én cocktail, velg den første
-      displayCocktail(data.drinks[0]);
-  } else {
-      // Hvis ingen cocktail finnes, hent en tilfeldig en
-      getRandomCocktail();
-  }
+/*
+    2) Main Initialization Function
+       Called on page load to start all the requests:
+       - Fetch random meal
+       - Display meal
+       - Map meal category to spirit
+       - Fetch matching (or random) cocktail
+       - Display cocktail
+*/
+function init() {
+  fetchRandomMeal()
+        .then(function(meal) {
+            displayMealData(meal);
+            const spirit = mapMealCategoryToDrinkIngredient(meal.strCategory);
+            console.log("Matchende drikkeingrediens:", spirit);
+            return fetchCocktailByDrinkIngredient(spirit);
+        })
+        .then(function(cocktail) {
+            displayCocktailData(cocktail);
+        })
+        .catch(function(error) {
+            console.error("Error i init-funksjonen:", error);
+        });
 }
 
-}
+/*
+ Fetch a Random Meal from TheMealDB
+ Returns a Promise that resolves with the meal object
+ */
+function fetchRandomMeal() {
+  return fetch("https://www.themealdb.com/api/json/v1/1/random.php")
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log("Måltids-API fungerer:", data);
+            let meal = data.meals[0];
+            return meal; // Returnerer måltidsobjektet
+        })
+        .catch(function(error) {
+            console.error("Feil ved henting av måltid:", error);
+        });
+    }
 
 
-async function getRandomCocktail() {
-  const randomUrl = "https://www.thecocktaildb.com/api/json/v1/1/random.php";
-  const response = await fetch(randomUrl);
-  const data = await response.json();
-  
-  if (data.drinks) {
-      displayCocktail(data.drinks[0]);
-  }
-}
+/*
+Display Meal Data in the DOM
+Receives a meal object with fields like:
+  strMeal, strMealThumb, strCategory, strInstructions,
+  strIngredientX, strMeasureX, etc.
+*/
+function displayMealData(meal) {
+    //Image
+    document.getElementById("img").src = meal.strMealThumb;
 
+    //Meal Name
+    document.getElementById("MealName").textContent = meal.strMeal;
 
-function displayCocktail(cocktail) {
-  document.getElementById("cocktail-name").textContent = cocktail.strDrink;
-  document.getElementById("cocktail-image").src = cocktail.strDrinkThumb;
-  
-  let ingredientsList = "";
-  for (let i = 1; i <= 15; i++) {
-      const ingredient = cocktail[`strIngredient${i}`];
-      const measure = cocktail[`strMeasure${i}`];
-      if (ingredient) {
-          ingredientsList += `<li>${measure || ""} ${ingredient}</li>`;
+    //category
+    document.getElementById("category").textContent = "Category: " + meal.strCategory;
+
+    //ingredients
+    let ingredientList = document.getElementById("ingredients");
+
+    for ( let i = 1; i <= 20; i++){
+      let ingredient = meal["strIngredient" + i];
+      let measure = meal["strMeasure" + i];
+
+      if (!ingredient || ingredient.trim() === "") { 
+        break; 
       }
-  }
-  
-  document.getElementById("cocktail-ingredients").innerHTML = ingredientsList;
+      else {
+        const li = document.createElement("li");
+    
+        li.textContent = measure + " " + ingredient;
+        ingredientList.appendChild(li);
+      }}
+
+      //instructions
+      document.getElementById("instructions").textContent = meal.strInstructions
+}
+
+/*
+Convert MealDB Category to a TheCocktailDB Spirit
+Looks up category in our map, or defaults to 'cola'
+*/
+function mapMealCategoryToDrinkIngredient(category) {
+  if (!category) return "cola";
+  return mealCategoryToCocktailIngredient[category] || "cola";
+}
+
+/*
+Fetch a Cocktail Using a Spirit from TheCocktailDB
+Returns Promise that resolves to cocktail object
+We call https://www.thecocktaildb.com/api/json/v1/1/search.php?s=DRINK_INGREDIENT to get a list of cocktails
+Don't forget encodeURIComponent()
+If no cocktails found, fetch random
+*/
+function fetchCocktailByDrinkIngredient(drinkIngredient) {
+  console.log("Henter cocktail for:", drinkIngredient);
+    const url = `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${encodeURIComponent(drinkIngredient)}`;
+
+    return fetch(url)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (data.drinks && data.drinks.length > 0) {
+                console.log("Fant cocktail:", data.drinks[0]);
+                return data.drinks[0]; // Returnerer cocktailobjektet
+            } else {
+                console.log("Ingen match, henter tilfeldig cocktail");
+                return fetchRandomCocktail(); // Henter tilfeldig cocktail hvis ingen match
+            }
+        })
+        .catch(function(error) {
+            console.error("Feil ved henting av cocktail:", error);
+            return fetchRandomCocktail();
+        });
+}
+
+/*
+Fetch a Random Cocktail (backup in case nothing is found by the search)
+Returns a Promise that resolves to cocktail object
+*/
+function fetchRandomCocktail() {
+  console.log("Henter tilfeldig cocktail");
+    return fetch("https://www.thecocktaildb.com/api/json/v1/1/random.php")
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log("Tilfeldig cocktaildata:", data);
+            return data.drinks[0]; // Returnerer cocktailobjektet
+        })
+        .catch(function(error) {
+            console.error("Feil ved henting av tilfeldig cocktail:", error);
+        });
+}
+
+/*
+Display Cocktail Data in the DOM
+*/
+function displayCocktailData(cocktail) {
+  if (!cocktail) {
+    console.error("Ingen cocktaildata tilgjengelig");
+    return;
+}
+
+// Bilde
+document.getElementById("drinkimg").src = cocktail.strDrinkThumb;
+
+// Navn
+document.getElementById("cname").textContent = cocktail.strDrink;
+
+// Kategori
+document.getElementById("cCategory").textContent = "Category: " + (cocktail.strCategory || "Unknown");
+
+// Ingredienser
+let ingredientList = document.getElementById("cIngredients");
+ingredientList.innerHTML = ""; // Tømmer tidligere innhold
+
+for (let i = 1; i <= 15; i++) {
+    let ingredient = cocktail["strIngredient" + i];
+    let measure = cocktail["strMeasure" + i];
+
+    if (!ingredient || ingredient.trim() === "") {
+        break;
+    }
+
+    const li = document.createElement("li");
+    li.textContent = (measure ? measure + " " : "") + ingredient;
+    ingredientList.appendChild(li);
+}
 }
 
 
-getCocktailByMealCategory(meal.strCategory);
-
-
+/*
+Call init() when the page loads
+*/
+window.onload = init;

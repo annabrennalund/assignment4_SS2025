@@ -1,3 +1,5 @@
+
+
 body {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -100,7 +102,7 @@ body {
   margin-top: 20px;
 }
 
-/* Aesthetic touches */
+/* touches */
 h2, h3 {
   font-family: 'Georgia', serif;
 }
@@ -121,4 +123,29 @@ li::before {
   left: 0;
   color: #5c6bc0;
   font-size: 1.2rem;
+}
+
+body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 100px auto;
+  font-family: sans-serif;
+  margin: 20px;
+}
+#title {
+  grid-column: span 2;
+  text-align: center;
+}
+.meal,
+.cocktail {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+.meal img,
+.cocktail img {
+  max-width: 250px;
+  display: block;
+  margin-top: 10px;
 }

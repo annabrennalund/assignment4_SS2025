@@ -1,34 +1,38 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <title>Meal & Cocktail Matcher</title>
+    <style>
+      /* Basic styling */
+    </style>
     <link rel="stylesheet" href="style.css" />
   </head>
-  
   <body>
     <h1 id="title">Meal + Cocktail Matching</h1>
-    <h2>Meal information:</h2>
 
-
-    <div id="meal-container" class="meal">Random meal info goes here</div>
-
-    <div id="cocktail-container" class="cocktail">
-      Matched or random cocktail info goes here
+    <!--Random Meal-->
+    <div id="meal-container" class="meal">
+      <h1>Random Meal</h1>
+      <h2>Meal Information:</h2>
+      <img src="" alt="" id="img">
+      <h3 id="MealName"></h3>
+      <p id="category"></p>
+      <ul id="ingredients"></ul>
+      <p id="instructions"></p>
     </div>
-    
-    <div id="meal-container">
-      
-  </div>
-  
 
+    <!--Cocktail-->
+    <div id="cocktail-container" class="cocktail">
+      <h2>Matched or random cocktail information</h2>
+      <img src="" alt="" id="drinkimg">
+      <h3 id="cname"></h3>
+      <p id="cCategory"></p>
 
-
-
-
-
-
-
+      <h4>Drink Ingredients:</h4>
+      <ul id="cIngredients"></ul>
+    </div>
 
     <script src="script.js"></script>
   </body>
